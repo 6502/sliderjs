@@ -25,20 +25,28 @@
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
 // 
-// For more information, please refer to < http://unlicense.org/>
+// For more information, please refer to < http://unlicense.org/ >
 //
-function slider(x, low, high, format) {
+function slider(opts) {
+    let low = opts.low === undefined ? 0 : opts.low,
+        high = opts.high === undefined ? low+100 : opts.high,
+        x = opts.value === undefined ? (low + high)/2 : opts.value,
+        format = opts.format === undefined ? x => x.toFixed(2) : opts.format,
+        caption = opts.caption;
     let p = document.body.appendChild(document.createElement("div")),
+        c = caption ? p.appendChild(document.createElement("div")) : null,
         d = p.appendChild(document.createElement("div")),
         t = d.appendChild(document.createElement("div")),
         i = p.appendChild(document.createElement("input"));
     p.style.position = "relative";
-    p.style.background = "#EEE";
+    p.style.background = opts.background === undefined ? "#EEE" : opts.background;
     p.style.display = "inline-block";
     p.style.margin = "8px";
     p.style.padding = "8px";
     p.style.boxShadow = "inset 1px 1px 1px rgba(0, 0, 0, 0.25)";
     p.style.borderRadius = "4px";
+    p.style.textAlign = "center";
+    if (caption) c.textContent = caption;
 
     i.style.width = "60px";
     i.style.display = "inline-block";
@@ -72,12 +80,12 @@ function slider(x, low, high, format) {
     function changed() {
         var evt = document.createEvent("HTMLEvents");
         evt.initEvent("change", false, true);
+        i.value = format(x);
         p.dispatchEvent(evt);
-        i.value = (format || (x => x.toFixed(2)))(x);
         update();
     }
 
-    i.value = (format || (x => x.toFixed(2)))(x);
+    i.value = format(x);
     i.onchange = event => {
         event.preventDefault();
         event.stopPropagation();
